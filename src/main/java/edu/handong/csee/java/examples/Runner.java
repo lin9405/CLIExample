@@ -1,30 +1,37 @@
 package edu.handong.csee.java.examples;
 
 import org.apache.commons.cli.CommandLine;
+
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import java.io.*;
 
+//옵션 어떻게 넣냐면 -s 3 -c 6 
 public class Runner {
 	
 	String path;
 	boolean verbose;
 	boolean help;
+	boolean full;
 
 	public static void main(String[] args) {
 
 		Runner myRunner = new Runner();
 		myRunner.run(args);
+		
 
 	}
 
 	private void run(String[] args) {
+	
 		Options options = createOptions();
 		
 		if(parseOptions(options, args)){
 			if (help){
+				System.out.println("!!!");
 				printHelp(options);
 				return;
 			}
@@ -35,11 +42,31 @@ public class Runner {
 			// TODO show the number of files in the path
 			
 			if(verbose) {
-				
-				// TODO list all files in the path
+		
+				System.out.println("");
 				
 				System.out.println("Your program is terminated. (This message is shown because you turned on -v option!");
 			}
+			File dir = new File(path);
+			
+		//	File file = new File(path);
+		
+			if(full) {
+			//System.out.println( file.getName());
+				
+				if(dir.listFiles() != null) {
+					for(File file:dir.listFiles()) {
+						if(file.isFile()) {
+							System.out.println(file.getName());
+							System.out.println(file.getAbsolutePath());
+						}
+						
+					}
+					}
+				else {
+					System.out.println(dir.getAbsolutePath());
+				}
+			} 
 		}
 	}
 
@@ -53,9 +80,11 @@ public class Runner {
 			path = cmd.getOptionValue("p");
 			verbose = cmd.hasOption("v");
 			help = cmd.hasOption("h");
+			full =cmd.hasOption("f");
 
 		} catch (Exception e) {
 			printHelp(options);
+			System.out.println("??");
 			return false;
 		}
 
@@ -86,6 +115,10 @@ public class Runner {
 		options.addOption(Option.builder("h").longOpt("help")
 		        .desc("Help")
 		        .build());
+		
+	options.addOption((Option.builder("f").longOpt("fullpath"))
+			.desc("Help")
+			.build());
 
 		return options;
 	}
@@ -97,5 +130,4 @@ public class Runner {
 		String footer ="\nPlease report issues at https://github.com/lifove/CLIExample/issues";
 		formatter.printHelp("CLIExample", header, options, footer, true);
 	}
-
 }
